@@ -1,0 +1,26 @@
+# --- secrets ---
+# API keys live here; .env.example is the committed template.
+.env
+.env.*
+!.env.example
+
+# --- python ---
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# --- node ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+*.log
+
+# --- os / editors ---
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
