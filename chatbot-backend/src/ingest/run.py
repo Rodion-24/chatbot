@@ -37,6 +37,7 @@ async def ingest_corpus(
     directory: Path = CORPUS_DIR,
     chunk_size: int = 500,
     chunk_overlap: int = 50,
+    strategy: str = "structural",
     skip_existing: bool = False,
 ) -> None:
     documents = load_directory(directory)
@@ -56,6 +57,7 @@ async def ingest_corpus(
                     document,
                     chunk_size=chunk_size,
                     chunk_overlap=chunk_overlap,
+                    strategy=strategy,
                     skip_existing=skip_existing,
                 )
     finally:
@@ -71,6 +73,7 @@ async def _ingest_one(
     *,
     chunk_size: int,
     chunk_overlap: int,
+    strategy: str,
     skip_existing: bool,
 ) -> None:
     existing = await _existing_document_id(conn, document.source_uri)
@@ -100,6 +103,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--chunk-size", type=int, default=500)
     parser.add_argument("--chunk-overlap", type=int, default=50)
     parser.add_argument(
+        "--strategy",
+        choices=["structural", "naive"],
+        default="structural",
+        help="structural: split on headings; naive: fixed character window",
+    )
+    parser.add_argument(
         "--skip-existing",
         action="store_true",
         help="leave already-ingested documents alone instead of replacing them",
@@ -119,6 +128,7 @@ async def _main() -> None:
         directory=args.directory,
         chunk_size=args.chunk_size,
         chunk_overlap=args.chunk_overlap,
+        strategy=args.strategy,
         skip_existing=args.skip_existing,
     )
 

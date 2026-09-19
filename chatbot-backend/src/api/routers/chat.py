@@ -18,7 +18,7 @@ from src.observability import observe, trace_context, update_generation
 from src.providers.base import EmbeddingProvider, LLMProvider, Message, StreamResult
 from src.providers.pricing import estimate_cost_usd
 from src.retrieval.base import RetrievedChunk
-from src.retrieval.vector import VectorRetriever
+from src.retrieval.factory import build_retriever
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +41,8 @@ async def _retrieve(
     no documentation to work from."""
     try:
         async with db_pool.acquire() as conn:
-            return await VectorRetriever(embedder, conn).search(
-                question, top_k=settings.retrieval_top_k
-            )
+            retriever = build_retriever(settings, embedder, conn)
+            return await retriever.search(question, top_k=settings.retrieval_top_k)
     except Exception:  # noqa: BLE001 - surfaced through an empty context
         logger.exception("retrieval failed; answering without context")
         return []

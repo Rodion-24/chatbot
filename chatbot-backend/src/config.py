@@ -53,6 +53,9 @@ class Settings(BaseSettings):
 
     # --- retrieval ---
     retrieval_top_k: int = 5
+    # "hybrid" fuses vector + full-text with RRF; "vector" is the stage-2
+    # dense-only baseline, kept so the two can be compared.
+    retriever: Literal["hybrid", "vector"] = "hybrid"
 
     # --- embeddings ---
     # Must match the vector(N) column width in migrations/0001_init.sql.

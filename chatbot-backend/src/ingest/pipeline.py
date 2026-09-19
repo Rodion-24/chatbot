@@ -9,6 +9,7 @@ import asyncpg
 
 from src.ingest.base import IngestResult, SourceDocument
 from src.ingest.chunker import TextChunk, chunk_text
+from src.ingest.structural import chunk_by_structure
 from src.observability import observe, update_span
 from src.providers.base import EmbeddingProvider, Usage
 
@@ -29,16 +30,28 @@ class MarkdownIngestor:
         *,
         chunk_size: int = 500,
         chunk_overlap: int = 50,
+        strategy: str = "structural",
     ) -> None:
         self._embedder = embedder
         self._conn = conn
         self._chunk_size = chunk_size
         self._chunk_overlap = chunk_overlap
+        # "structural" cuts on markdown headings and keeps code blocks whole;
+        # "naive" is the stage-2 fixed window, kept so the two can be compared.
+        self._strategy = strategy
 
     @observe(name="ingest_document")
     async def ingest(self, document: SourceDocument) -> IngestResult:
         """Store `document` and its chunks. Runs as a single transaction."""
-        chunks = chunk_text(document.content, size=self._chunk_size, overlap=self._chunk_overlap)
+        if self._strategy == "structural":
+            pairs = chunk_by_structure(document.content)
+            chunks = [c for c, _ in pairs]
+            headings = [h for _, h in pairs]
+        else:
+            chunks = chunk_text(
+                document.content, size=self._chunk_size, overlap=self._chunk_overlap
+            )
+            headings = [""] * len(chunks)
         if not chunks:
             raise ValueError(f"document {document.title!r} produced no chunks")
 
@@ -48,7 +61,7 @@ class MarkdownIngestor:
         # document would silently degrade search results.
         async with self._conn.transaction():
             doc_id = await self._insert_document(document)
-            await self._insert_chunks(doc_id, chunks, vectors, document.meta)
+            await self._insert_chunks(doc_id, chunks, vectors, headings, document.meta)
 
         update_span(
             output={"document_id": doc_id, "chunks_written": len(chunks)},
@@ -58,6 +71,7 @@ class MarkdownIngestor:
                 "embed_tokens": usage.input_tokens,
                 "chunk_size": self._chunk_size,
                 "chunk_overlap": self._chunk_overlap,
+                "strategy": self._strategy,
             },
         )
         logger.info(
@@ -103,6 +117,7 @@ class MarkdownIngestor:
         doc_id: int,
         chunks: Sequence[TextChunk],
         vectors: Sequence[Sequence[float]],
+        headings: Sequence[str],
         meta: dict,
     ) -> None:
         """Bulk-insert chunks. `embedding` is written here and never selected."""
@@ -117,11 +132,11 @@ class MarkdownIngestor:
                     doc_id,
                     chunk.index,
                     chunk.content,
-                    None,  # section_title: stage 3, heading-aware chunking
+                    heading or None,
                     meta,
                     vector,
                     self._embedder.model,
                 )
-                for chunk, vector in zip(chunks, vectors, strict=True)
+                for chunk, vector, heading in zip(chunks, vectors, headings, strict=True)
             ],
         )

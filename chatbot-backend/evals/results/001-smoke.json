@@ -1,0 +1,128 @@
+{
+  "summary": {
+    "mode": "retrieval",
+    "total": 5,
+    "passed": 5,
+    "pass_rate": 1.0,
+    "errors": 0,
+    "cost_usd": 0.0,
+    "latency_p50_s": 0.486,
+    "latency_p95_s": 2.639,
+    "context_recall": null,
+    "by_category": {
+      "factual": {
+        "total": 5,
+        "passed": 5,
+        "pass_rate": 1.0
+      }
+    },
+    "label": "smoke",
+    "model": null,
+    "embedding_model": "text-embedding-3-small",
+    "prompt_version": null,
+    "top_k": 5,
+    "timestamp": "2026-09-18T22:59:19.261871+00:00"
+  },
+  "scores": [
+    {
+      "id": 1,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        22,
+        106,
+        105,
+        102,
+        19
+      ],
+      "context_recall": null,
+      "latency_s": 2.638919624965638,
+      "cost_usd": 0.0,
+      "answer": "",
+      "error": null
+    },
+    {
+      "id": 2,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        23,
+        77,
+        22,
+        24,
+        75
+      ],
+      "context_recall": null,
+      "latency_s": 2.2641176669858396,
+      "cost_usd": 0.0,
+      "answer": "",
+      "error": null
+    },
+    {
+      "id": 3,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        31,
+        89,
+        93,
+        30,
+        6
+      ],
+      "context_recall": null,
+      "latency_s": 0.21343887480907142,
+      "cost_usd": 0.0,
+      "answer": "",
+      "error": null
+    },
+    {
+      "id": 4,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        31,
+        85,
+        93,
+        92,
+        89
+      ],
+      "context_recall": null,
+      "latency_s": 0.12048370903357863,
+      "cost_usd": 0.0,
+      "answer": "",
+      "error": null
+    },
+    {
+      "id": 5,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        28,
+        85,
+        89,
+        31,
+        93
+      ],
+      "context_recall": null,
+      "latency_s": 0.4857559169176966,
+      "cost_usd": 0.0,
+      "answer": "",
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,1258 @@
+{
+  "summary": {
+    "mode": "full",
+    "total": 60,
+    "passed": 55,
+    "pass_rate": 0.917,
+    "errors": 0,
+    "cost_usd": 0.24,
+    "latency_p50_s": 2.117,
+    "latency_p95_s": 4.908,
+    "context_recall": null,
+    "by_category": {
+      "ambiguous": {
+        "total": 6,
+        "passed": 5,
+        "pass_rate": 0.833,
+        "must_include_hit": 0.833
+      },
+      "factual": {
+        "total": 24,
+        "passed": 24,
+        "pass_rate": 1.0,
+        "must_include_hit": 1.0
+      },
+      "filtered": {
+        "total": 9,
+        "passed": 9,
+        "pass_rate": 1.0,
+        "must_include_hit": 1.0
+      },
+      "impossible": {
+        "total": 9,
+        "passed": 7,
+        "pass_rate": 0.778,
+        "must_include_hit": 1.0,
+        "refusal_accuracy": 0.778
+      },
+      "multihop": {
+        "total": 12,
+        "passed": 10,
+        "pass_rate": 0.833,
+        "must_include_hit": 0.833
+      }
+    },
+    "label": "baseline",
+    "model": "claude-sonnet-5",
+    "embedding_model": "text-embedding-3-small",
+    "prompt_version": "system_v1",
+    "top_k": 5,
+    "timestamp": "2026-09-18T23:04:34.070963+00:00"
+  },
+  "scores": [
+    {
+      "id": 1,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        22,
+        106,
+        105,
+        102,
+        19
+      ],
+      "context_recall": null,
+      "latency_s": 2.6719111250713468,
+      "cost_usd": 0.003232,
+      "answer": "```sql\nCREATE EXTENSION vector;\n```\n\n(Do this once in each database where you want to use it.) [chunk 22]",
+      "error": null
+    },
+    {
+      "id": 2,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        23,
+        77,
+        22,
+        24,
+        75
+      ],
+      "context_recall": null,
+      "latency_s": 1.745402832981199,
+      "cost_usd": 0.003386,
+      "answer": "```sql\nCREATE TABLE items (id bigserial PRIMARY KEY, embedding vector(3));\n```\n\n[chunk 23][chunk 24]",
+      "error": null
+    },
+    {
+      "id": 3,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        31,
+        89,
+        93,
+        30,
+        6
+      ],
+      "context_recall": null,
+      "latency_s": 2.824174666078761,
+      "cost_usd": 0.004524,
+      "answer": "Based on the excerpts, the operator class for L2 distance indexing is `vector_l2_ops`, used as in:\n\n```sql\nCREATE INDEX ON items USING hnsw (embedding vector_l2_ops);\n```\n\n(Use `halfvec_l2_ops` for `halfvec` and `sparsevec_l2_ops` for `sparsevec`.) [chunk 30]\n\nThe specific operator symbol itself (e.g., `<->`) is not documented in these excerpts.",
+      "error": null
+    },
+    {
+      "id": 4,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        31,
+        85,
+        93,
+        92,
+        89
+      ],
+      "context_recall": null,
+      "latency_s": 2.2500793340150267,
+      "cost_usd": 0.003284,
+      "answer": "**`<=>`** gives cosine distance [chunk 85][chunk 92].",
+      "error": null
+    },
+    {
+      "id": 5,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        28,
+        85,
+        89,
+        31,
+        93
+      ],
+      "context_recall": null,
+      "latency_s": 2.584161042002961,
+      "cost_usd": 0.00435,
+      "answer": "Based on the excerpts, the `<#>` operator is defined as \"negative inner product\" [chunk 85], which is why the documentation instructs users to multiply by -1 to get the actual inner product: \"For inner product, multiply by -1 (since `<#>` returns the negative inner product)\" [chunk 28].\n\nThe documentation excerpts do not explain the underlying reason why it was designed to return the negative value.",
+      "error": null
+    },
+    {
+      "id": 6,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        24,
+        22,
+        77,
+        25,
+        75
+      ],
+      "context_recall": null,
+      "latency_s": 1.3569590838160366,
+      "cost_usd": 0.003278,
+      "answer": "```sql\nALTER TABLE items ADD COLUMN embedding vector(3);\n```\n\n[chunk 24]",
+      "error": null
+    },
+    {
+      "id": 7,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        25,
+        56,
+        74,
+        61,
+        84
+      ],
+      "context_recall": null,
+      "latency_s": 2.322059415979311,
+      "cost_usd": 0.003854,
+      "answer": "Use `COPY` for bulk loading data:\n\n```sql\nCOPY items (embedding) FROM STDIN WITH (FORMAT BINARY);\n```\n\nAdd any indexes *after* loading the initial data for best performance [chunk 61, chunk 25].",
+      "error": null
+    },
+    {
+      "id": 8,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        25,
+        24,
+        77,
+        26,
+        56
+      ],
+      "context_recall": null,
+      "latency_s": 2.2088203341700137,
+      "cost_usd": 0.004186,
+      "answer": "Upsert vectors using:\n\n```sql\nINSERT INTO items (id, embedding) VALUES (1, '[1,2,3]'), (2, '[4,5,6]')\n    ON CONFLICT (id) DO UPDATE SET embedding = EXCLUDED.embedding;\n```\n\n[chunk 25]",
+      "error": null
+    },
+    {
+      "id": 9,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        18,
+        76,
+        69,
+        29,
+        73
+      ],
+      "context_recall": null,
+      "latency_s": 2.019078749930486,
+      "cost_usd": 0.003116,
+      "answer": "pgvector supports two index types: **HNSW** and **IVFFlat** [chunk 29].",
+      "error": null
+    },
+    {
+      "id": 10,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        18,
+        67,
+        29,
+        105,
+        69
+      ],
+      "context_recall": null,
+      "latency_s": 2.0486154169775546,
+      "cost_usd": 0.0032,
+      "answer": "Standaardmatig voert pgvector exacte nearest neighbor search uit, wat perfecte recall biedt [chunk 29].",
+      "error": null
+    },
+    {
+      "id": 11,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        45,
+        6,
+        31,
+        9,
+        30
+      ],
+      "context_recall": null,
+      "latency_s": 1.7997294999659061,
+      "cost_usd": 0.00319,
+      "answer": "```sql\nCREATE INDEX ON items USING hnsw (embedding vector_l2_ops);\n```\n\n[chunk 30]",
+      "error": null
+    },
+    {
+      "id": 12,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        9,
+        6,
+        59,
+        31,
+        45
+      ],
+      "context_recall": null,
+      "latency_s": 1.3741992921568453,
+      "cost_usd": 0.003356,
+      "answer": "```sql\nCREATE INDEX ON items USING hnsw (embedding vector_cosine_ops);\n```\n\n[chunk 31]",
+      "error": null
+    },
+    {
+      "id": 13,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        52,
+        45,
+        32,
+        37,
+        33
+      ],
+      "context_recall": null,
+      "latency_s": 1.8413057499565184,
+      "cost_usd": 0.003002,
+      "answer": "The default value of the `m` parameter for HNSW is 16 [chunk 32].",
+      "error": null
+    },
+    {
+      "id": 14,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        33,
+        34,
+        32,
+        35,
+        52
+      ],
+      "context_recall": null,
+      "latency_s": 2.0035654169041663,
+      "cost_usd": 0.003038,
+      "answer": "The default value of `ef_construction` is **64** [chunk 33][chunk 32].",
+      "error": null
+    },
+    {
+      "id": 15,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        74,
+        84,
+        75,
+        76,
+        32
+      ],
+      "context_recall": null,
+      "latency_s": 1.6729697911068797,
+      "cost_usd": 0.003122,
+      "answer": "The `vector` type can be indexed up to **2,000 dimensions** [chunk 32].",
+      "error": null
+    },
+    {
+      "id": 16,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        89,
+        90,
+        74,
+        84,
+        87
+      ],
+      "context_recall": null,
+      "latency_s": 1.3713990410324186,
+      "cost_usd": 0.003278,
+      "answer": "Half-precision vectors (halfvec) can be indexed up to **4,000 dimensions** [chunk 74].",
+      "error": null
+    },
+    {
+      "id": 17,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        74,
+        32,
+        90,
+        40,
+        84
+      ],
+      "context_recall": null,
+      "latency_s": 2.0491824590135366,
+      "cost_usd": 0.003204,
+      "answer": "The bit type can be indexed up to **64,000 dimensions** [chunk 32][chunk 40].",
+      "error": null
+    },
+    {
+      "id": 18,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        92,
+        91,
+        84,
+        32,
+        74
+      ],
+      "context_recall": null,
+      "latency_s": 1.699806208955124,
+      "cost_usd": 0.003712,
+      "answer": "sparsevec supports up to **1,000 non-zero elements** for indexing [chunk 32]. (Note: as a data type, sparsevec itself can have up to 16,000 non-zero elements [chunk 92], but indexing is limited to 1,000.)",
+      "error": null
+    },
+    {
+      "id": 19,
+      "category": "ambiguous",
+      "passed": false,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        40,
+        52,
+        53,
+        10,
+        83
+      ],
+      "context_recall": null,
+      "latency_s": 1.6119186670985073,
+      "cost_usd": 0.002916,
+      "answer": "1 (by default) [chunk 40]",
+      "error": null
+    },
+    {
+      "id": 20,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        40,
+        52,
+        83,
+        53,
+        41
+      ],
+      "context_recall": null,
+      "latency_s": 1.9532791669480503,
+      "cost_usd": 0.003666,
+      "answer": "Verwenden Sie `SET LOCAL` innerhalb einer Transaktion:\n\n```sql\nBEGIN;\nSET LOCAL ivfflat.probes = 10;\nSELECT ...\nCOMMIT;\n```\n\n[chunk 41]",
+      "error": null
+    },
+    {
+      "id": 21,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        40,
+        83,
+        38,
+        64,
+        30
+      ],
+      "context_recall": null,
+      "latency_s": 1.871408750070259,
+      "cost_usd": 0.00301,
+      "answer": "A good starting point is `rows / 1000` for up to 1M rows [chunk 38].",
+      "error": null
+    },
+    {
+      "id": 22,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        73,
+        18,
+        105,
+        22,
+        69
+      ],
+      "context_recall": null,
+      "latency_s": 1.5639230420347303,
+      "cost_usd": 0.003334,
+      "answer": "Yes. According to the documentation: \"Yes, pgvector uses the write-ahead log (WAL), which allows for replication and point-in-time recovery.\" [chunk 73]",
+      "error": null
+    },
+    {
+      "id": 23,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        78,
+        18,
+        69,
+        73,
+        76
+      ],
+      "context_recall": null,
+      "latency_s": 1.9672512500546873,
+      "cost_usd": 0.003304,
+      "answer": "No, indexes do not need to fit into memory, but \"like other index types, you'll likely see better performance if they do\" [chunk 78].",
+      "error": null
+    },
+    {
+      "id": 24,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        33,
+        45,
+        34,
+        82,
+        52
+      ],
+      "context_recall": null,
+      "latency_s": 1.3428107500076294,
+      "cost_usd": 0.003006,
+      "answer": "The default value of `hnsw.ef_search` is 40 [chunk 33][chunk 82].",
+      "error": null
+    },
+    {
+      "id": 25,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        52,
+        33,
+        45,
+        48,
+        32
+      ],
+      "context_recall": null,
+      "latency_s": 1.7796882910188287,
+      "cost_usd": 0.00302,
+      "answer": "The default for `hnsw.max_scan_tuples` is 20,000 [chunk 52].",
+      "error": null
+    },
+    {
+      "id": 26,
+      "category": "factual",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        105,
+        18,
+        102,
+        12,
+        19
+      ],
+      "context_recall": null,
+      "latency_s": 2.295227041002363,
+      "cost_usd": 0.003764,
+      "answer": "Laut Dokumentation unterstützt pgvector Postgres 13+ (\"supports Postgres 13+\") [chunk 19]. Zudem wird erwähnt, dass ab einer bestimmten Version die Unterstützung für Postgres 10 fallen gelassen wurde [chunk 12].",
+      "error": null
+    },
+    {
+      "id": 27,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        79,
+        83,
+        41,
+        36,
+        64
+      ],
+      "context_recall": null,
+      "latency_s": 2.0542776251677424,
+      "cost_usd": 0.003136,
+      "answer": "Use:\n\n```sql\nSELECT pg_size_pretty(pg_relation_size('index_name'));\n```\n\n[chunk 79]",
+      "error": null
+    },
+    {
+      "id": 28,
+      "category": "ambiguous",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        35,
+        36,
+        41,
+        2,
+        7
+      ],
+      "context_recall": null,
+      "latency_s": 2.131396082928404,
+      "cost_usd": 0.003448,
+      "answer": "According to the documentation, the default number of parallel workers for index creation is 2:\n\n\"Speed up index creation on large tables by increasing the number of parallel workers (2 by default)\" [chunk 41] [chunk 35]",
+      "error": null
+    },
+    {
+      "id": 29,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        74,
+        84,
+        76,
+        78,
+        75
+      ],
+      "context_recall": null,
+      "latency_s": 4.907937334151939,
+      "cost_usd": 0.007114,
+      "answer": "Since 3,000 dimensions exceeds the 2,000-dimension limit for standard `vector` indexing, you should use **half-precision indexing**, which supports indexing up to 4,000 dimensions:\n\n> \"You can use [half-precision vectors](#half-precision-vectors) or [half-precision indexing](#half-precision-indexing) to index up to 4,000 dimensions or [binary quantization](#binary-quantization) to index up to 64,000 dimensions.\" [chunk 74]\n\nThis would use the `halfvec` type mentioned in the type reference [chunk 84], but the documentation excerpts provided do not include the specific SQL syntax or the exact operator class name to use with half-precision indexing — that detail is not documented here in these excerpts.",
+      "error": null
+    },
+    {
+      "id": 30,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        75,
+        74,
+        76,
+        77,
+        23
+      ],
+      "context_recall": null,
+      "latency_s": 2.3005686250980943,
+      "cost_usd": 0.00466,
+      "answer": "Yes, but only if you index rows with the same number of dimensions, using expressional and partial indexing. For example:\n\n```sql\nCREATE INDEX ON embeddings USING hnsw ((embedding::vector(3)) vector_l2_ops) WHERE (model_id = 123);\n```\n\nand query with:\n\n```sql\nSELECT * FROM embeddings WHERE model_id = 123 ORDER BY embedding::vector(3) <-> '[3,1,2]' LIMIT 5;\n```\n\n[chunk 75][chunk 76]",
+      "error": null
+    },
+    {
+      "id": 31,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        82,
+        45,
+        81,
+        62,
+        37
+      ],
+      "context_recall": null,
+      "latency_s": 5.233829208184034,
+      "cost_usd": 0.006162,
+      "answer": "With an HNSW index, results are limited by the size of the dynamic candidate list, `hnsw.ef_search`, which is 40 by default. There may be even fewer results due to dead tuples or filtering conditions in the query [chunk 82].\n\nTwo ways to address this:\n\n1. Increase `hnsw.ef_search` (implied by the note that results are limited by its size), or more specifically, enable **iterative index scans**, which can help address this [chunk 82]. For example, you can set:\n```sql\nSET hnsw.iterative_scan = strict_order;\n```\nwhich will automatically scan more of the index when needed [chunk 45].\n\n2. If filtering is the cause (since with approximate indexes, filtering is applied *after* the index is scanned), you can consider **partial indexing** if filtering by only a few distinct values [chunk 45].\n\nAlso note: `NULL` vectors are not indexed (as well as zero vectors for cosine distance), which is a separate reason results may be fewer, but not something you can \"fix\" via query tuning [chunk 82].",
+      "error": null
+    },
+    {
+      "id": 32,
+      "category": "multihop",
+      "passed": false,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        35,
+        62,
+        36,
+        41,
+        78
+      ],
+      "context_recall": null,
+      "latency_s": 3.8314359169453382,
+      "cost_usd": 0.006214,
+      "answer": "Based on the excerpts, for smaller indexes and faster build times at scale, you should use **binary quantization** [chunk 62][chunk 36].\n\nBefore creating the index, you should first load your initial data, since \"it's faster to create an index after loading your initial data\" [chunk 35]. Additionally, to speed up index creation, you can increase the number of parallel workers:\n\n```sql\nSET max_parallel_maintenance_workers = 7; -- plus leader\n```\n\nFor a large number of workers, you may need to increase `max_parallel_workers` (8 by default) [chunk 35][chunk 41].\n\nIn production environments, it's also recommended to create indexes concurrently to avoid blocking writes:\n\n```sql\nCREATE INDEX CONCURRENTLY ...\n```\n\n[chunk 62]\n\nThe documentation notes that \"The [index options](#index-options) also have a significant impact on build time (use the defaults unless seeing low recall)\" [chunk 36], but does not specify exact details on binary quantization setup steps beyond what's mentioned here.",
+      "error": null
+    },
+    {
+      "id": 33,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        47,
+        46,
+        67,
+        56,
+        26
+      ],
+      "context_recall": null,
+      "latency_s": 2.2611851659603417,
+      "cost_usd": 0.004732,
+      "answer": "To isolate tenants so one tenant's vectors don't affect another's recall/speed, the documentation suggests using **list partitioning** or separate tables:\n\n> \"For tenant isolation, use [list partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html) or separate tables.\" [chunk 47]\n\nThe specific SQL example given is:\n\n```sql\nCREATE TABLE items (customer_id int, embedding vector(3)) PARTITION BY LIST(customer_id);\n```\n\n[chunk 47]",
+      "error": null
+    },
+    {
+      "id": 34,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        49,
+        48,
+        50,
+        38,
+        43
+      ],
+      "context_recall": null,
+      "latency_s": 4.428070500027388,
+      "cost_usd": 0.007446,
+      "answer": "Die Dokumentation empfiehlt, `hnsw.iterative_scan` (bzw. `ivfflat.iterative_scan`) auf `relaxed_order` zu setzen, da dies bessere Recall-Werte liefert, und dann eine **materialized CTE** zu verwenden, um trotzdem eine strikte Reihenfolge zu erhalten:\n\n```sql\nSET hnsw.iterative_scan = relaxed_order;\n# or\nSET ivfflat.iterative_scan = relaxed_order;\n```\n\n```sql\nWITH relaxed_results AS MATERIALIZED (\n    SELECT id, embedding <-> '[1,2,3]' AS distance FROM items WHERE category_id = 123 ORDER BY distance LIMIT 5\n) SELECT * FROM relaxed_results ORDER BY distance + 0;\n```\n\nHinweis: `+ 0` ist für Postgres 17+ nötig [chunk 49][chunk 50].\n\nZusätzlich wird empfohlen, bei Abfragen mit Distanzfilter eine materialized CTE zu verwenden und den Distanzfilter außerhalb davon zu platzieren, für beste Performance [chunk 50].",
+      "error": null
+    },
+    {
+      "id": 35,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        78,
+        74,
+        76,
+        24,
+        61
+      ],
+      "context_recall": null,
+      "latency_s": 2.507142291869968,
+      "cost_usd": 0.004592,
+      "answer": "Based on chunk 61, for storing and loading a large number of vectors efficiently, the documentation recommends:\n\n1. **Storing**: \"Use the `halfvec` type instead of `vector` for a smaller working set.\"\n2. **Loading**: \"Use `COPY` for bulk loading data\"\n\n```sql\nCOPY items (embedding) FROM STDIN WITH (FORMAT BINARY);\n```\n\nAs for indexes, the documentation states: \"Add any indexes *after* loading the initial data for best performance.\" [chunk 61]",
+      "error": null
+    },
+    {
+      "id": 36,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        79,
+        41,
+        80,
+        83,
+        81
+      ],
+      "context_recall": null,
+      "latency_s": 3.7433867079671472,
+      "cost_usd": 0.005738,
+      "answer": "A query won't use an index unless it has an `ORDER BY` and `LIMIT`, where the `ORDER BY` is the result of a distance operator (not an expression) in ascending order [chunk 80]:\n\n```sql\n-- index\nORDER BY embedding <=> '[3,1,2]' LIMIT 5;\n\n-- no index\nORDER BY 1 - (embedding <=> '[3,1,2]') DESC LIMIT 5;\n```\n\nTwo ways to influence this:\n\n1. Encourage the planner to use an index for a query with:\n```sql\nBEGIN;\nSET LOCAL enable_seqscan = off;\nSELECT ...\nCOMMIT;\n```\n[chunk 80]\n\n2. Also note that if the table is small, a table scan may be faster [chunk 80] — so this isn't something to \"fix,\" but it explains why the planner may choose not to use the index even when eligible.",
+      "error": null
+    },
+    {
+      "id": 37,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        64,
+        41,
+        30,
+        83,
+        62
+      ],
+      "context_recall": null,
+      "latency_s": 2.238274624804035,
+      "cost_usd": 0.003806,
+      "answer": "To speed up index creation on large tables, increase the number of parallel workers (2 by default):\n\n```sql\nSET max_parallel_maintenance_workers = 7; -- plus leader\n```\n\nFor a large number of workers, you may also need to increase `max_parallel_workers` (8 by default) [chunk 41].",
+      "error": null
+    },
+    {
+      "id": 38,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        82,
+        83,
+        40,
+        42,
+        52
+      ],
+      "context_recall": null,
+      "latency_s": 2.2223994159139693,
+      "cost_usd": 0.004382,
+      "answer": "Based on the documentation, the two likely causes are:\n\n1. **The index was created with too little data for the number of lists.** The fix is to drop the index until the table has more data:\n```sql\nDROP INDEX index_name;\n```\n\n2. **Results are limited by the number of probes (`ivfflat.probes`).** Enabling iterative index scans can address this. [chunk 83]\n\nAdditionally, note that `NULL` vectors are not indexed (as well as zero vectors for cosine distance) [chunk 83].",
+      "error": null
+    },
+    {
+      "id": 39,
+      "category": "multihop",
+      "passed": false,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        40,
+        37,
+        52,
+        30,
+        10
+      ],
+      "context_recall": null,
+      "latency_s": 2.6680029588751495,
+      "cost_usd": 0.00388,
+      "answer": "Die Dokumentation nennt nur den ersten der drei Punkte konkret:\n\n1. „Create the index *after* the table h[as data]“ [chunk 37]\n\nDie weiteren zwei Punkte werden in den bereitgestellten Auszügen nicht aufgeführt – die Dokumentation deckt dies hier nicht ab.",
+      "error": null
+    },
+    {
+      "id": 40,
+      "category": "multihop",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        50,
+        43,
+        51,
+        49,
+        27
+      ],
+      "context_recall": null,
+      "latency_s": 3.3197267500218004,
+      "cost_usd": 0.004996,
+      "answer": "Use a materialized CTE with the distance filter placed *outside* the CTE:\n\n```sql\nWITH nearest_results AS MATERIALIZED (\n    SELECT id, embedding <-> '[1,2,3]' AS distance FROM items ORDER BY distance LIMIT 5\n) SELECT * FROM nearest_results WHERE distance < 5 ORDER BY distance;\n```\n\nNote: Place any other filters inside the CTE [chunk 51]\n\nThis approach is recommended \"for queries that filter by distance... for best performance (due to the current behavior of the Postgres executor)\" [chunk 50].",
+      "error": null
+    },
+    {
+      "id": 41,
+      "category": "impossible",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        73,
+        18,
+        105,
+        22,
+        29
+      ],
+      "context_recall": null,
+      "latency_s": 2.535057291854173,
+      "cost_usd": 0.003572,
+      "answer": "The documentation does not cover this. The excerpts only mention that a non-partitioned table has a 32 TB limit by default in Postgres and that \"a partitioned table can have thousands of partitions of that size\" [chunk 73], but there is no information about sharding a vector index across multiple nodes.",
+      "error": null
+    },
+    {
+      "id": 42,
+      "category": "impossible",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        4,
+        2,
+        7,
+        62,
+        37
+      ],
+      "context_recall": null,
+      "latency_s": 1.6624316670931876,
+      "cost_usd": 0.003134,
+      "answer": "The documentation does not cover GPU acceleration for HNSW index builds.",
+      "error": null
+    },
+    {
+      "id": 43,
+      "category": "impossible",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        105,
+        69,
+        18,
+        20,
+        71
+      ],
+      "context_recall": null,
+      "latency_s": 2.116834083106369,
+      "cost_usd": 0.003366,
+      "answer": "The documentation provided does not cover pricing or an \"Enterprise\" version of pgvector — I cannot answer this from the given excerpts.",
+      "error": null
+    },
+    {
+      "id": 44,
+      "category": "impossible",
+      "passed": false,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [
+        "built-in reranker"
+      ],
+      "refused": true,
+      "retrieved_ids": [
+        18,
+        105,
+        29,
+        67,
+        59
+      ],
+      "context_recall": null,
+      "latency_s": 2.6012919161003083,
+      "cost_usd": 0.003826,
+      "answer": "The documentation excerpts provided do not cover this. There is no mention of a built-in reranker model used by pgvector — the excerpts only show a manual re-ranking approach using SQL, where results are re-ranked \"by the full vectors for better recall\" using a subquery [chunk 59], not any specific built-in reranker model.",
+      "error": null
+    },
+    {
+      "id": 45,
+      "category": "impossible",
+      "passed": false,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [
+        "automatic re-embedding"
+      ],
+      "refused": true,
+      "retrieved_ids": [
+        75,
+        25,
+        56,
+        60,
+        74
+      ],
+      "context_recall": null,
+      "latency_s": 1.3546300001908094,
+      "cost_usd": 0.003354,
+      "answer": "The documentation provided does not cover this. There is no information about configuring automatic re-embedding when switching embedding models.",
+      "error": null
+    },
+    {
+      "id": 46,
+      "category": "impossible",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        73,
+        105,
+        60,
+        69,
+        18
+      ],
+      "context_recall": null,
+      "latency_s": 1.1896809588652104,
+      "cost_usd": 0.002924,
+      "answer": "The documentation does not cover this.",
+      "error": null
+    },
+    {
+      "id": 47,
+      "category": "impossible",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        18,
+        58,
+        67,
+        29,
+        57
+      ],
+      "context_recall": null,
+      "latency_s": 2.86495558405295,
+      "cost_usd": 0.005092,
+      "answer": "The documentation does not cover an automatic single-setting way to combine vector and full-text search. Instead, it shows a manual approach using a query combining full-text search with `plainto_tsquery` and `ts_rank_cd`, then suggests combining results yourself using Reciprocal Rank Fusion or a cross-encoder [chunk 58]:\n\n```sql\nSELECT id, content FROM items, plainto_tsquery('hello search') query\n    WHERE textsearch @@ query ORDER BY ts_rank_cd(textsearch, query) DESC LIMIT 5;\n```\n\nThere is no mention of a single pgvector setting that automates this. [chunk 57][chunk 58]",
+      "error": null
+    },
+    {
+      "id": 48,
+      "category": "impossible",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        105,
+        20,
+        69,
+        18,
+        102
+      ],
+      "context_recall": null,
+      "latency_s": 1.7136471248231828,
+      "cost_usd": 0.00351,
+      "answer": "The documentation does not cover this. It only mentions that pgvector is available on hosted Postgres providers, linking to a GitHub issue listing them, without recommending any specific one for production [chunk 105].",
+      "error": null
+    },
+    {
+      "id": 49,
+      "category": "impossible",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        2,
+        4,
+        7,
+        3,
+        9
+      ],
+      "context_recall": null,
+      "latency_s": 1.637139624916017,
+      "cost_usd": 0.003266,
+      "answer": "The documentation excerpts provided do not cover this topic — there is no information here about rolling back an HNSW index build to a previous version.",
+      "error": null
+    },
+    {
+      "id": 50,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        32,
+        45,
+        33,
+        62,
+        52
+      ],
+      "context_recall": null,
+      "latency_s": 1.5532861249521375,
+      "cost_usd": 0.003672,
+      "answer": "In the HNSW Index Options section, the two parameters are:\n\n- `m` - the max number of connections per layer (16 by default)\n- `ef_construction` - the size of the dynamic candidate list for constructing the graph (64 by default)\n\n[chunk 32]",
+      "error": null
+    },
+    {
+      "id": 51,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        73,
+        65,
+        81,
+        60,
+        47
+      ],
+      "context_recall": null,
+      "latency_s": 1.3132276660762727,
+      "cost_usd": 0.003182,
+      "answer": "According to the FAQ: \"A non-partitioned table has a limit of 32 TB by default in Postgres.\" [chunk 73]",
+      "error": null
+    },
+    {
+      "id": 52,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        80,
+        81,
+        41,
+        47,
+        48
+      ],
+      "context_recall": null,
+      "latency_s": 3.7457455839030445,
+      "cost_usd": 0.0057,
+      "answer": "According to the documentation, the planner doesn't consider out-of-line (TOAST) storage in cost estimates, which can make a serial scan look cheaper than a parallel scan:\n\n\"The planner doesn't consider [out-of-line storage](https://www.postgresql.org/docs/current/storage-toast.html) in cost estimates, which can make a serial scan look cheaper.\" [chunk 80][chunk 81]\n\nTo address this, you can reduce the cost of a parallel scan for a query with:\n\n```sql\nBEGIN;\nSET LOCAL min_parallel_table_scan_size = 1;\nSET LOCAL parallel_setup_cost = 1;\nSELECT ...\nCOMMIT;\n```\n\nor choose to store vectors inline:\n\n```sql\nALTER TABLE items ALTER COLUMN embedding SET STORAGE PLAIN;\n```\n[chunk 81]",
+      "error": null
+    },
+    {
+      "id": 53,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        42,
+        37,
+        10,
+        40,
+        83
+      ],
+      "context_recall": null,
+      "latency_s": 1.7987465420737863,
+      "cost_usd": 0.003388,
+      "answer": "According to the documentation, the phases for IVFFlat are:\n\n1. `initializing`\n2. `performing k-means`\n3. `assigning tuples`\n4. `loading tuples`\n\n[chunk 42]",
+      "error": null
+    },
+    {
+      "id": 54,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        52,
+        45,
+        48,
+        33,
+        51
+      ],
+      "context_recall": null,
+      "latency_s": 2.335184667026624,
+      "cost_usd": 0.003764,
+      "answer": "Under Iterative Scan Options for HNSW, `hnsw.scan_mem_multiplier` specifies \"the max amount of memory to use, as a multiple of `work_mem`\", with a default of 1:\n\n```sql\nSET hnsw.scan_mem_multiplier = 2;\n```\n\n[chunk 52]",
+      "error": null
+    },
+    {
+      "id": 55,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        21,
+        97,
+        98,
+        111,
+        110
+      ],
+      "context_recall": null,
+      "latency_s": 1.9045302080921829,
+      "cost_usd": 0.004044,
+      "answer": "According to the documentation, `nmake` is used to build on Windows:\n\n```cmd\nset \"PGROOT=C:\\Program Files\\PostgreSQL\\18\"\ncd %TEMP%\ngit clone --branch v0.8.6 https://github.com/pgv...\n```\n\nThis is run from the `x64 Native Tools Command Prompt for VS [version]` as administrator [chunk 21].",
+      "error": null
+    },
+    {
+      "id": 56,
+      "category": "filtered",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        60,
+        35,
+        52,
+        34,
+        33
+      ],
+      "context_recall": null,
+      "latency_s": 1.4542481671087444,
+      "cost_usd": 0.003144,
+      "answer": "According to the excerpts, `shared_buffers` should typically be 25% of the server's memory [chunk 60].",
+      "error": null
+    },
+    {
+      "id": 57,
+      "category": "ambiguous",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        62,
+        64,
+        58,
+        63,
+        48
+      ],
+      "context_recall": null,
+      "latency_s": 5.355969458818436,
+      "cost_usd": 0.00779,
+      "answer": "Based on the documentation, several approaches can speed up searches:\n\n**Exact Search (without an index):**\nIncrease `max_parallel_workers_per_gather`:\n```sql\nSET max_parallel_workers_per_gather = 4;\n```\nIf vectors are normalized to length 1, use inner product for best performance:\n```tsql\nSELECT * FROM items ORDER BY embedding <#> '[3,1,2]' LIMIT 5;\n```\n[chunk 63]\n\n**Approximate Search (with an index):**\n- Use binary quantization with re-ranking to keep indexes in-memory at scale [chunk 64].\n- For an IVFFlat index, increase the number of inverted lists (at the expense of recall):\n```sql\nCREATE INDEX ON items USING ivfflat (embedding vector_l2_ops) WITH (lists = 1000);\n```\n[chunk 64]\n\n**Debugging performance:**\nUse `EXPLAIN (ANALYZE, BUFFERS)`:\n```sql\nEXPLAIN (ANALYZE, BUFFERS) SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;\n```\n[chunk 62]\n\n**General index build tips:**\nUse binary quantization for smaller indexes and faster build times at scale, and create indexes concurrently in production to avoid blocking writes:\n```sql\nCREATE INDEX CONCURRENTLY ...\n```\n[chunk 62]",
+      "error": null
+    },
+    {
+      "id": 58,
+      "category": "ambiguous",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        37,
+        82,
+        9,
+        62,
+        52
+      ],
+      "context_recall": null,
+      "latency_s": 2.841083124978468,
+      "cost_usd": 0.0045,
+      "answer": "Based on the documentation, IVFFlat \"has faster build times and uses less memory than HNSW, but has lower query performance (in terms of speed-recall tradeoff)\" [chunk 37].\n\nSo the tradeoff is:\n- **HNSW**: better query performance (speed-recall tradeoff)\n- **IVFFlat**: faster build times, uses less memory, but lower query performance\n\nThe documentation does not state that one is universally \"better\" — it presents this as a tradeoff depending on your priorities (build speed/memory vs. query performance).",
+      "error": null
+    },
+    {
+      "id": 59,
+      "category": "ambiguous",
+      "passed": true,
+      "must_include_hit": 0.0,
+      "forbidden_hit": [],
+      "refused": true,
+      "retrieved_ids": [
+        60,
+        41,
+        34,
+        49,
+        52
+      ],
+      "context_recall": null,
+      "latency_s": 2.6681309998966753,
+      "cost_usd": 0.004096,
+      "answer": "The provided excerpts do not cover how to set the `lists` parameter — the documentation does not cover it here.",
+      "error": null
+    },
+    {
+      "id": 60,
+      "category": "ambiguous",
+      "passed": true,
+      "must_include_hit": 1.0,
+      "forbidden_hit": [],
+      "refused": false,
+      "retrieved_ids": [
+        82,
+        48,
+        50,
+        63,
+        81
+      ],
+      "context_recall": null,
+      "latency_s": 4.128172874916345,
+      "cost_usd": 0.006024,
+      "answer": "Fewer results than expected can happen for a few reasons:\n\n**With an HNSW index:**\nResults are limited by the size of the dynamic candidate list (`hnsw.ef_search`), which is 40 by default. There may be even fewer results due to dead tuples or filtering conditions in the query. Also, `NULL` vectors are not indexed (as well as zero vectors for cosine distance) [chunk 82].\n\n**With filtering queries:**\n\"queries with filtering can return less results since filtering is applied *after* the index is scanned\" [chunk 48].\n\n**Solution — iterative index scans:**\nStarting with 0.8.0, you can enable iterative index scans, which will automatically scan more of the index until enough results are found (or it reaches `hnsw.max_scan_tuples` or `ivfflat.max_probes`) [chunk 48].\n\nFor queries that filter by distance, the documentation recommends using a materialized CTE with the distance filter placed outside of it for best performance [chunk 50].",
+      "error": null
+    }
+  ]
+}

@@ -42,13 +42,30 @@ PRICING: dict[str, ModelPricing] = {
 }
 
 
+def _lookup(model: str) -> ModelPricing | None:
+    """Find pricing for a model id, tolerating a dated suffix.
+
+    Responses carry dated ids (`claude-haiku-4-5-20251001`) while the table
+    is keyed by the base id. Without this, every dated id misses the table
+    and its cost is silently reported as unknown.
+    """
+    pricing = PRICING.get(model)
+    if pricing is not None:
+        return pricing
+    # Longest prefix wins, so `claude-opus-4-5` can't shadow `claude-opus-4`.
+    matches = [key for key in PRICING if model.startswith(key)]
+    if not matches:
+        return None
+    return PRICING[max(matches, key=len)]
+
+
 def estimate_cost_usd(model: str, usage: Usage) -> Decimal | None:
     """Cost of one call, or None when the model is not in the table.
 
     Unknown models return None rather than 0 so a missing entry is visible
     in traces instead of silently reporting free requests.
     """
-    pricing = PRICING.get(model)
+    pricing = _lookup(model)
     if pricing is None:
         return None
 
