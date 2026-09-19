@@ -24,9 +24,23 @@ def load_markdown_file(
     return SourceDocument(
         title=_extract_title(text) or path.stem,
         content=text,
-        source_uri=source_uri or str(path),
+        # Relative to the project root, not absolute: source_uri is the key
+        # re-ingestion matches on, and an absolute path silently stops
+        # matching the moment the project is moved or cloned elsewhere.
+        source_uri=source_uri or _relative_uri(path),
         version=version,
     )
+
+
+def _relative_uri(path: Path) -> str:
+    """Path relative to the project root, with a stable POSIX separator."""
+    root = Path(__file__).resolve().parents[2]
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(root).as_posix()
+    except ValueError:
+        # Outside the project tree — fall back to the absolute path.
+        return resolved.as_posix()
 
 
 def load_directory(

@@ -14,7 +14,7 @@ PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 
 #: Prompt used by the chat endpoint. Bump the suffix to introduce a new
 #: version and record the name alongside eval results.
-SYSTEM_PROMPT = "system_v1"
+SYSTEM_PROMPT = "system_v2"
 
 
 @cache
