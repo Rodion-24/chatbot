@@ -102,6 +102,7 @@ Each row is one change, measured against the 60-question golden set in
 | 4 | **LLM judge** on `impossible` / `ambiguous` (Haiku 4.5) — grades meaning instead of substrings | 92% | 96% | 100% | 89%* | 2.10s | $0.28 |
 | 5 | **`tsv` → `english`** — the stemmer now matches the corpus language | — | — | — | — | — | $0 |
 | 6 | **Hybrid search** — vector + full-text fused with RRF, 20 candidates per arm | **97%** | **100%** | 100% | 89%* | 2.07s | $0.33 |
+| 7 | **Re-ranker** — Haiku 4.5 orders 20 candidates down to 5 | **100%** | 100% | 100% | **100%** | 2.75s | $0.32 |
 
 ### What each change bought
 
@@ -110,6 +111,23 @@ the rule "answer in the language of the question" was applied to the language
 of the retrieved excerpts. Tightening that rule, plus requiring numbers to be
 written as the docs write them (`2,000`, not `2.000`), took refusal accuracy
 from 78% to 100%.
+
+**Re-ranker.** The last failure was `#26` — "Which Postgres versions does
+pgvector support?", whose answer sits in an Installation chunk that shares
+almost no vocabulary with the question. Widening the shortlist to 20 showed
+the chunk was there all along, at **position 7** — just outside the top 5 the
+generator sees. A Haiku pass over those 20 moved it to position 1. Context
+recall went 79% → 84% and the eval set went clean at 60/60.
+
+It also cost almost nothing per query, because the shortlist is truncated to
+700 characters per chunk before it is sent. The visible cost is latency: p50
+went 2.07s → 2.75s, an extra model call on the critical path of every answer.
+
+One detail worth keeping: asked about something the corpus does not cover
+("what does pgvector Enterprise cost"), the re-ranker correctly returns an
+*empty* ranking. The first version treated that as a failure and logged it as
+an error; it is the right answer, and the code now falls through to the search
+order so the generator still has something to refuse against.
 
 **Hybrid search.** Dense retrieval alone could not surface literal
 identifiers: asked "What should I set `lists` to?", it returned chunks *about*
@@ -138,7 +156,8 @@ cd chatbot-backend && uv run python -m evals.runner --mode retrieval
 | Retriever | context recall | Cost | Wall clock |
 |---|---|---|---|
 | Vector only | 66% | $0.00 | 8s |
-| **Hybrid (RRF)** | **79%** | $0.00 | 8s |
+| Hybrid (RRF) | 79% | $0.00 | 8s |
+| **Hybrid + re-ranker** | **84%** | $0.05 | 90s |
 
 This is the loop used while iterating on chunking and search: a full run costs
 $0.33 and four minutes, this costs nothing and finishes before you look away.
@@ -214,10 +233,13 @@ Three things the sweep shows that carry over to a corpus where it does matter:
   (`uv run python -m evals.find_sources` proposes candidates, it does not
   decide). Chunk ids also shift on every re-ingest, so the field has to be
   regenerated whenever the chunking strategy changes.
-- **`#26` still fails.** "Which Postgres versions does pgvector support?" —
-  the answer (`Postgres 13+`) sits in an Installation chunk that neither arm
-  ranks highly, because the question's wording shares almost no vocabulary
-  with it. A reranker over a wider candidate set is the next lever.
+- **100% on the eval set does not mean 100% in general.** Sixty questions
+  written against one README is a narrow test, and the set was authored
+  alongside the system it grades. A clean sweep means the remaining failures
+  are outside what this set can see, not that there are none.
+- **Re-ranking is off by default** (`RERANK_ENABLED`). It buys the last 3
+  percentage points and 5 points of context recall, for an extra model call
+  on every query — worth measuring, not obviously worth shipping.
 - **The HNSW index is dormant.** It exists (migration `0003`) but the planner
   will not use it until the corpus is far larger; today every query is still
   an exact scan. See the section above for the measurement.
