@@ -1,7 +1,13 @@
 # docs-rag
 
-RAG assistant over documentation. Skeleton: a working streaming chat endpoint, provider
-abstraction, database schema and migrations. Retrieval and ingestion are interfaces only.
+A retrieval-augmented assistant over the pgvector documentation, built to a
+single rule: every change to retrieval is measured against a golden set
+before and after, and the numbers go in the table below.
+
+```
+chatbot-backend/   FastAPI + Postgres/pgvector, ingest, retrieval, evals
+chatbot-ui/        Vite + React + Tailwind, streaming chat UI
+```
 
 ## Stack
 
@@ -10,11 +16,21 @@ Python 3.12 · uv · FastAPI (async) · Postgres 17 + pgvector · asyncpg · htt
 ## Quick start
 
 ```bash
-cp .env.example .env          # add ANTHROPIC_API_KEY (or OPENAI_API_KEY)
+cd chatbot-backend
+cp .env.example .env          # add ANTHROPIC_API_KEY and OPENAI_API_KEY
 uv sync
-docker compose up -d db langfuse
+docker compose up -d db
 uv run python -m src.db.migrate
+uv run python -m src.ingest.run       # load the corpus
 uv run uvicorn src.api.app:app --reload
+```
+
+The UI is a separate app:
+
+```bash
+cd chatbot-ui
+npm install
+npm run dev                            # http://localhost:5173
 ```
 
 The `db` service publishes on host port **5433** by default (5432 is usually taken by
@@ -61,14 +77,14 @@ An `error` event is emitted instead of `done` if the stream fails after headers 
 ## How it fits together
 
 - **Providers** — `LLMProvider` and `EmbeddingProvider` are `Protocol`s in
-  [src/providers/base.py](src/providers/base.py); Anthropic and OpenAI implement them and
-  [factory.py](src/providers/factory.py) picks one from `LLM_PROVIDER` / `EMBEDDING_PROVIDER`.
+  [src/providers/base.py](chatbot-backend/src/providers/base.py); Anthropic and OpenAI implement them and
+  [factory.py](chatbot-backend/src/providers/factory.py) picks one from `LLM_PROVIDER` / `EMBEDDING_PROVIDER`.
 - **Retries** — every provider call goes through
-  [with_retry](src/providers/retry.py) (exponential backoff, full jitter) on top of the SDKs'
+  [with_retry](chatbot-backend/src/providers/retry.py) (exponential backoff, full jitter) on top of the SDKs'
   own retry handling.
 - **Cost** — token usage is read off each response and priced by
-  [pricing.py](src/providers/pricing.py); it lands on the SSE `usage` event and the Langfuse span.
-- **Tracing** — `@observe` decorators from [src/observability.py](src/observability.py). Without
+  [pricing.py](chatbot-backend/src/providers/pricing.py); it lands on the SSE `usage` event and the Langfuse span.
+- **Tracing** — `@observe` decorators from [src/observability.py](chatbot-backend/src/observability.py). Without
   Langfuse keys they are no-ops, so the app runs with no observability backend.
 - **Database** — asyncpg pool, plain-SQL forward-only migrations
   (`uv run python -m src.db.migrate`), repositories with explicit column lists.
@@ -76,7 +92,7 @@ An `error` event is emitted instead of `done` if the stream fails after headers 
 ## Iterations and metrics
 
 Each row is one change, measured against the 60-question golden set in
-`evals/dataset/golden.json`. Run it with `uv run python -m evals.runner`.
+`evals/dataset/golden.json`. Run it with `uv run python -m evals.runner` from `chatbot-backend/`.
 
 | # | Change | Overall | factual | multihop | refusal acc | p50 | $/run |
 |---|---|---|---|---|---|---|---|
@@ -116,7 +132,7 @@ stamps each chunk with its heading path. multihop went from 83% to 100%.
 is scored without calling the model at all:
 
 ```bash
-uv run python -m evals.runner --mode retrieval
+cd chatbot-backend && uv run python -m evals.runner --mode retrieval
 ```
 
 | Retriever | context recall | Cost | Wall clock |
@@ -126,6 +142,57 @@ uv run python -m evals.runner --mode retrieval
 
 This is the loop used while iterating on chunking and search: a full run costs
 $0.33 and four minutes, this costs nothing and finishes before you look away.
+
+### What an approximate index costs
+
+`ORDER BY embedding <=> $1` scans every row, so its answers are the true
+nearest neighbours. An HNSW index walks a graph instead — faster, but it can
+miss. Measured by capturing the exact answers, building the index and
+re-running the same 60 queries:
+
+```bash
+cd chatbot-backend && uv run python -m evals.recall_index
+```
+
+Corpus: 136 chunks. Index: `m=16, ef_construction=64`, built in 0.03s, 1096 kB.
+
+| `hnsw.ef_search` | recall@10 | queries matching exactly | p50 | p95 |
+|---|---|---|---|---|
+| 1 | 10.0% | 0/60 | 0.29ms | 0.41ms |
+| 2 | 20.0% | 0/60 | 0.27ms | 0.31ms |
+| 4 | 40.0% | 0/60 | 0.29ms | 0.33ms |
+| 10 | 99.7% | 58/60 | 0.31ms | 0.33ms |
+| **40** (default) | **100%** | **60/60** | 0.35ms | 0.36ms |
+| 100 | 100% | 60/60 | 0.40ms | 1.01ms |
+
+The index ships in migration `0003`, with the pgvector defaults — the sweep
+is what justifies them: recall is already perfect at `ef_search=40`, so
+raising `m` or `ef_construction` would cost build time and index size for
+nothing.
+
+**It earns nothing at this corpus size, and that is the honest reading.** An
+exact scan answers in 0.76ms; HNSW at its default halves that to 0.35ms,
+which no user perceives, in exchange for giving up guaranteed-exact results.
+Postgres agrees: on 136 rows the planner picks a sequential scan and ignores
+the index entirely. It is in the schema as groundwork for a larger corpus,
+not as a present-day win.
+
+Three things the sweep shows that carry over to a corpus where it does matter:
+
+- **`ef_search` is the whole tradeoff, and it is not set anywhere.** Below 10
+  recall collapses — at `ef_search=1` the index returns one correct neighbour
+  in ten. Postgres' default of 40 is saturated here, so nothing pins it in
+  code; on a larger corpus it becomes the first dial to tune and belongs in
+  the connection setup next to `register_vector`.
+- **`m` and `ef_construction` are permanent.** They shape the graph at build
+  time and cannot be changed by a `SET` later — a graph built with poor links
+  stays poor, and no amount of `ef_search` compensates. Only `ef_search` is
+  tunable per query.
+- **The planner has to be pushed onto the index to measure it.** A sequential
+  scan is genuinely cheaper on a table this small, so the first run of this
+  script compared exact search against itself and reported a flat 100% at
+  every setting. `SET enable_seqscan = off` is what makes the comparison
+  real — without it the numbers are meaningless.
 
 ### Where it does not work
 
@@ -151,16 +218,17 @@ $0.33 and four minutes, this costs nothing and finishes before you look away.
   the answer (`Postgres 13+`) sits in an Installation chunk that neither arm
   ranks highly, because the question's wording shares almost no vocabulary
   with it. A reranker over a wider candidate set is the next lever.
-- **No HNSW index, deliberately** — exact search is the recall baseline an
-  approximate index will be measured against.
+- **The HNSW index is dormant.** It exists (migration `0003`) but the planner
+  will not use it until the corpus is far larger; today every query is still
+  an exact scan. See the section above for the measurement.
 
 ## Schema
 
-`documents` and `chunks` per [migrations/0001_init.sql](migrations/0001_init.sql). `chunks.tsv`
+`documents` and `chunks` per [migrations/0001_init.sql](chatbot-backend/migrations/0001_init.sql). `chunks.tsv`
 is a generated `tsvector` with a GIN index. There is **no HNSW index** on `chunks.embedding` —
 an exact baseline is wanted for recall measurement first.
 
 ## Not implemented
 
 Chunking, embedding generation, retrieval, reranking and evals are stubs — see
-[src/retrieval/](src/retrieval/), [src/ingest/](src/ingest/) and [evals/](evals/).
+[src/retrieval/](chatbot-backend/src/retrieval/), [src/ingest/](chatbot-backend/src/ingest/) and [evals/](chatbot-backend/evals/).

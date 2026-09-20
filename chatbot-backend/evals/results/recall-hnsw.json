@@ -1,0 +1,61 @@
+{
+  "corpus_chunks": 136,
+  "queries": 60,
+  "top_k": 10,
+  "index": {
+    "m": 16,
+    "ef_construction": 64,
+    "build_s": 0.03,
+    "size": "1096 kB"
+  },
+  "exact": {
+    "p50_ms": 0.76,
+    "p95_ms": 1.37
+  },
+  "planner_used_index": true,
+  "hnsw": [
+    {
+      "ef_search": 1,
+      "recall": 0.1,
+      "perfect": 0,
+      "p50_ms": 0.29,
+      "p95_ms": 0.41
+    },
+    {
+      "ef_search": 2,
+      "recall": 0.2,
+      "perfect": 0,
+      "p50_ms": 0.27,
+      "p95_ms": 0.31
+    },
+    {
+      "ef_search": 4,
+      "recall": 0.4,
+      "perfect": 0,
+      "p50_ms": 0.29,
+      "p95_ms": 0.33
+    },
+    {
+      "ef_search": 10,
+      "recall": 0.9967,
+      "perfect": 58,
+      "p50_ms": 0.31,
+      "p95_ms": 0.33
+    },
+    {
+      "ef_search": 40,
+      "recall": 1.0,
+      "perfect": 60,
+      "p50_ms": 0.35,
+      "p95_ms": 0.36
+    },
+    {
+      "ef_search": 100,
+      "recall": 1.0,
+      "perfect": 60,
+      "p50_ms": 0.4,
+      "p95_ms": 1.01
+    }
+  ],
+  "index_kept": false
+}
