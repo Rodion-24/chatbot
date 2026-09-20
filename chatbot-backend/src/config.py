@@ -57,6 +57,16 @@ class Settings(BaseSettings):
     # dense-only baseline, kept so the two can be compared.
     retriever: Literal["hybrid", "vector"] = "hybrid"
 
+    # --- reranking ---
+    # Off by default: it adds a model call to every query, so it has to earn
+    # its place on the eval set before being turned on.
+    rerank_enabled: bool = False
+    # Candidates pulled from the retriever before re-ranking down to top_k.
+    rerank_candidates: int = 20
+    # A cheap model is enough to order a shortlist, and keeping it distinct
+    # from the answering model avoids one model grading its own shortlist.
+    rerank_model: str = "claude-haiku-4-5"
+
     # --- embeddings ---
     # Must match the vector(N) column width in migrations/0001_init.sql.
     embedding_dim: int = 1536
